@@ -4,11 +4,14 @@
   "private": true,
   "dependencies": {
     "flow-bin": "^0.69.0",
+    "flow-typed": "^2.4.0",
+    "jest": "^20.0.4",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1"
   },
   "scripts": {
+    "install": "flow-typed install",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
