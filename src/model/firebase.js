@@ -1,6 +1,7 @@
 // @flow
 
 import * as firebase from 'firebase';
+require('firebase/firestore');
 
 const testConfig = {
   apiKey: 'AIzaSyA0og4HurFmXRj-Xczx7k7o0byUImh56ZU',
