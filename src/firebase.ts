@@ -1,14 +1,16 @@
 import '@firebase/firestore';
 
 import firebase from '@firebase/app';
+import getConfig from 'next/config';
 
-const projId = process.env.VUE_APP_FIREBASE_PROJECT_ID;
+const { publicRuntimeConfig } = getConfig();
+const projId = publicRuntimeConfig.FIREBASE_PROJECT_ID;
 
 firebase.initializeApp({
-  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  apiKey: publicRuntimeConfig.FIREBASE_API_KEY,
   authDomain: `${projId}.firebaseapp.com`,
   databaseURL: `${projId}.firebaseio.com`,
-  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_ID,
+  messagingSenderId: publicRuntimeConfig.FIREBASE_MESSAGING_ID,
   projectId: projId,
   storageBucket: `${projId}.appspot.com`,
 });
