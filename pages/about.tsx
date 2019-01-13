@@ -1,24 +1,22 @@
-import { Model, when, notify } from '@whenjs/when';
-import { scan } from 'rxjs/operators';
+import { Model } from '@whenjs/when';
 
-import { useObservable } from '../src/when-react/use-helpers';
+import { useState } from 'react';
+import { useWhen } from '../src/when-react/use-helpers';
 
-@notify('foo')
 class ViewModel extends Model {
   public foo: number;
 
   constructor() {
     super();
-    this.foo = 0;
+    this.propertyShouldNotify('foo');
+
+    this.foo = 1;
   }
 }
 
-const vm = new ViewModel();
-
-export default function Example() {
-  // Declare a new state variable, which we'll call "count"
-  const obs = when(vm, x => x.foo).pipe(scan((acc, x) => acc + x, 0));
-  const num = useObservable(obs, 0);
+function Example() {
+  const [vm] = useState(new ViewModel());
+  const num = useWhen(vm, x => x.foo);
 
   return (
     <div>
@@ -27,3 +25,19 @@ export default function Example() {
     </div>
   );
 }
+
+export default () => {
+  const [clicked, setClick] = useState(false);
+
+  if (clicked) {
+    return <div>deaded.</div>;
+  }
+
+  return (
+    <div>
+      <Example />
+
+      <button onClick={() => setClick(true)}>unmount</button>
+    </div>
+  );
+};

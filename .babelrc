@@ -1,7 +1,9 @@
 {
-  "presets": ["next/babel", "@zeit/next-typescript/babel"],
-  "plugins": [
-    ["@babel/proposal-decorators", { "decoratorsBeforeExport": true }],
-    "@babel/proposal-class-properties"
+  "presets": [
+    [
+      "next/babel",
+      { "preset-env": { "targets": { "browsers": "chrome 69" } } }
+    ],
+    "@zeit/next-typescript/babel"
   ]
 }
