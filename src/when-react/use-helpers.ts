@@ -1,13 +1,10 @@
-import { getValue, when } from '@whenjs/when';
+import { getValue, Model, when } from '@whenjs/when';
 import { useEffect, useState } from 'react';
 import { Observable } from 'rxjs';
 
 export type PropSelector<TIn, TOut> = ((t: TIn) => TOut);
 
-export function useObservable<T>(
-  target: () => Observable<T>,
-  initial: T | undefined
-) {
+export function useObservable<T>(target: () => Observable<T>, initial?: T) {
   const [ret, setter] = useState(initial);
   const [obs] = useState(target());
 
@@ -22,14 +19,25 @@ export function useObservable<T>(
   return ret;
 }
 
+export function useViewModel<T extends Model>(initial: T) {
+  const [ret] = useState(initial);
+
+  useEffect(
+    () => {
+      return ret.unsubscribe.bind(ret);
+    },
+    [ret]
+  );
+
+  return ret;
+}
+
 export function useWhen<TSource, TRet>(
   model: TSource,
   prop: PropSelector<TSource, TRet>
 ): TRet {
   const initial = getValue(model, prop);
+  const val = initial ? initial.value! : undefined;
 
-  return useObservable(
-    () => when(model, prop),
-    initial ? initial.value : undefined
-  );
+  return useObservable(() => when(model, prop), val);
 }

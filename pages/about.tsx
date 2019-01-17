@@ -2,7 +2,7 @@ import { Model, notifyFor } from '@whenjs/when';
 
 import { useState } from 'react';
 import { lazyForDocument } from '../src/when-firebase';
-import { useWhen } from '../src/when-react/use-helpers';
+import { useViewModel, useWhen } from '../src/when-react/use-helpers';
 
 import { db } from '../src/firebase';
 
@@ -30,7 +30,7 @@ class ViewModel extends Model {
 }
 
 function Example() {
-  const [vm] = useState(new ViewModel());
+  const vm = useViewModel(new ViewModel());
   const num = useWhen(vm, x => x.foo);
   const desc = useWhen(vm, x => x.todo!.description);
 
