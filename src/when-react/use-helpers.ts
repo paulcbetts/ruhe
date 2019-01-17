@@ -4,7 +4,10 @@ import { Observable } from 'rxjs';
 
 export type PropSelector<TIn, TOut> = ((t: TIn) => TOut);
 
-export function useObservable<T>(target: () => Observable<T>, initial: T) {
+export function useObservable<T>(
+  target: () => Observable<T>,
+  initial: T | undefined
+) {
   const [ret, setter] = useState(initial);
   const [obs] = useState(target());
 
@@ -23,5 +26,10 @@ export function useWhen<TSource, TRet>(
   model: TSource,
   prop: PropSelector<TSource, TRet>
 ): TRet {
-  return useObservable(() => when(model, prop), getValue(model, prop).result!);
+  const initial = getValue(model, prop);
+
+  return useObservable(
+    () => when(model, prop),
+    initial ? initial.value : undefined
+  );
 }
