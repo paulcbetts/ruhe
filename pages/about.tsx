@@ -30,7 +30,7 @@ class ViewModel extends Model {
 }
 
 function Example() {
-  const vm = useViewModel(new ViewModel());
+  const vm = useViewModel(() => new ViewModel());
   const num = useWhen(vm, x => x.foo);
   const desc = useWhen(vm, x => x.todo!.description);
 
