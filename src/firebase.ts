@@ -19,3 +19,7 @@ try {
 
 export const db = firebase.firestore!();
 db.settings({ timestampsInSnapshots: true });
+
+if (!('exit' in process)) {
+  window.db = db;
+}

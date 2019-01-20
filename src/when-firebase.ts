@@ -12,8 +12,9 @@ import {
   PropSelector,
 } from '@whenjs/when';
 
-import { Observable, Observer } from 'rxjs';
+import { concat, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { useObservable } from './when-react/use-helpers';
 
 function queryUpdates(query: Query): Observable<QuerySnapshot> {
   return Observable.create(query.onSnapshot.bind(query));
@@ -46,7 +47,7 @@ function documentUpdates(doc: DocumentReference): Observable<DocumentSnapshot> {
     */
 }
 
-function toData<T>(doc: DocumentSnapshot): T | null {
+export function toData<T>(doc: DocumentSnapshot): T | null {
   if (!doc.exists) {
     return null;
   }
@@ -96,5 +97,26 @@ export function lazyForDocument<T extends Model, TProp>(
       const t: any = target;
       t[name] = x;
     })
+  );
+}
+
+export function useDocument<T>(
+  doc: DocumentReference,
+  snapshot?: DocumentSnapshot
+) {
+  return useObservable<T | null>(() => {
+    const initial = snapshot
+      ? of(toData<T>(snapshot))
+      : doc.get().then(x => toData<T>(x));
+
+    const update = documentUpdates(doc).pipe(map(x => toData<T>(x)));
+
+    return concat(initial, update);
+  });
+}
+
+export function useQuery(query: Query) {
+  return useObservable<QuerySnapshot>(() =>
+    concat(query.get(), queryUpdates(query))
   );
 }
