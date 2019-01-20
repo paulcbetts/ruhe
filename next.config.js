@@ -7,14 +7,35 @@ const { PHASE_PRODUCTION_SERVER } =
     : require('next-server/constants'); // Get values from `next-server` package when building on now v2
 
 module.exports = phase => {
+  const env = require('dotenv').config();
   if (phase === PHASE_PRODUCTION_SERVER) {
-    return {};
+    return { publicRuntimeConfig: env.parsed };
   }
 
   const withTypescript = require('@zeit/next-typescript');
-  const env = require('dotenv').config();
+  const withBundleAnalyzer = require('@zeit/next-bundle-analyzer');
 
-  return withTypescript({
+  const ts = withTypescript({
     publicRuntimeConfig: env.parsed,
+  });
+
+  if (!process.env.BUNDLE_ANALYZE) {
+    return ts;
+  }
+
+  return withBundleAnalyzer({
+    analyzeServer: true,
+    analyzeBrowser: true,
+    bundleAnalyzerConfig: {
+      server: {
+        analyzerMode: 'static',
+        reportFilename: '../bundles/server.html',
+      },
+      browser: {
+        analyzerMode: 'static',
+        reportFilename: '../bundles/client.html',
+      },
+    },
+    ...ts,
   });
 };
