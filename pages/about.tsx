@@ -1,20 +1,10 @@
 import { Model, notifyFor } from '@whenjs/when';
 
 import { useState } from 'react';
-import {
-  lazyForDocument,
-  lazyForQuery,
-  toData,
-  useDocument,
-  useQuery,
-} from '../src/when-firebase';
+import { lazyForDocument, toData, useQuery } from '../src/when-firebase';
 import { useViewModel, useWhen } from '../src/when-react/use-helpers';
 
-import {
-  DocumentReference,
-  DocumentSnapshot,
-  QuerySnapshot,
-} from '@firebase/firestore-types';
+import { DocumentSnapshot, QuerySnapshot } from '@firebase/firestore-types';
 import { db } from '../src/firebase';
 
 interface TodoItem {
@@ -37,7 +27,6 @@ interface EpisodeItem {
 class ViewModel extends Model {
   public foo = 1;
   public todo: TodoItem | null = null;
-  public episodes: EpisodeItem[] = [];
 
   constructor() {
     super();
@@ -48,12 +37,6 @@ class ViewModel extends Model {
       this,
       x => x.todo,
       db.collection('todos').doc('kQKMTu5gHOZirGmjgFo2')
-    );
-
-    lazyForQuery(
-      this,
-      x => x.episodes,
-      db.collection('game-of-thrones').limit(10000)
     );
   }
 }
@@ -82,12 +65,14 @@ function Example(props?: { initialEpDocs?: QuerySnapshot }) {
   const vm = useViewModel(() => new ViewModel());
   const num = useWhen(vm, x => x.foo);
   const desc = useWhen(vm, x => x.todo!.description);
-  const episodes = useWhen(vm, x => x.episodes) || [];
+
   const epDocs =
-    useQuery(db.collection('game-of-thrones').limit(10000)) ||
+    useQuery(() => db.collection('game-of-thrones').limit(10000)) ||
     props.initialEpDocs;
 
-  const eps = epDocs ? epDocs.docs.map(x => <Episode episode={x} />) : [];
+  const eps = epDocs
+    ? epDocs.docs.map(x => <Episode key={x.id} episode={x} />)
+    : [];
 
   return (
     <div>

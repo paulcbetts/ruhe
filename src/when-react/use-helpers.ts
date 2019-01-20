@@ -1,6 +1,7 @@
 import { getValue, Model, when } from '@whenjs/when';
 import { useEffect, useState } from 'react';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export type PropSelector<TIn, TOut> = ((t: TIn) => TOut);
 
@@ -13,7 +14,17 @@ export function useObservable<T>(
 
   useEffect(
     () => {
-      const sub = obs.subscribe(setter);
+      const sub = obs
+      /*
+        .pipe(
+          map(x => {
+            console.log('About to set!');
+            console.log(x);
+            return x;
+          })
+        )
+        */
+        .subscribe(setter);
       return sub.unsubscribe.bind(sub);
     },
     [obs]
