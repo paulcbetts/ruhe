@@ -119,12 +119,7 @@ export function useDocument<T>(
 }
 
 export function useQuery(query: () => Query) {
-  const [q] = useState(query);
-
-  return useObservable<QuerySnapshot>(() =>
-    concat(
-      q.get(),
-      queryUpdates(q).pipe(filter(x => x && x.docChanges().length > 0))
-    )
+  return useObservable(() =>
+    queryUpdates(query()).pipe(filter(x => x && x.docChanges().length > 0))
   );
 }
